@@ -19,6 +19,7 @@ export default defineConfig(({ command }) => ({
         "../../src/templates.ts",
       ),
       "agent-feedback-ui/ai-sdk": resolve(__dirname, "../../src/ai-sdk.ts"),
+      "agent-feedback-ui/react": resolve(__dirname, "../../src/react.ts"),
       "agent-feedback-ui": resolve(__dirname, "../../src/index.ts"),
     },
   },

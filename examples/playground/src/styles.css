@@ -54,12 +54,12 @@ code {
 }
 .afu-playground__main {
   display: grid;
-  grid-template-columns: 320px 1fr 380px;
+  grid-template-columns: 360px 1fr;
   gap: 16px;
   flex: 1;
   min-height: 0;
 }
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .afu-playground__main { grid-template-columns: 1fr; }
 }
 
@@ -299,6 +299,195 @@ code {
   border-color: #dadce0;
 }
 .afu-email-modal__btn--secondary:hover { background: #f1f3f4; }
+
+/* Slack modal styling — Slack-evocative purple chrome, channel hash icon. */
+.afu-slack-modal {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.afu-slack-modal__banner {
+  padding: 8px 14px;
+  background: #f0f9ff;
+  border-bottom: 1px solid #bae6fd;
+  font-size: 12px;
+  color: #0c4a6e;
+}
+.afu-slack-modal__banner code {
+  background: rgba(12, 74, 110, 0.08);
+  color: #0c4a6e;
+}
+.afu-slack-modal__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #4a154b;
+  color: #fff;
+  border-bottom: 1px solid #3b1239;
+}
+.afu-slack-modal__channel-prefix {
+  font-size: 16px;
+  font-weight: 700;
+  color: #d4a3d6;
+}
+.afu-slack-modal__channel {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  outline: none;
+  padding: 4px 0;
+  font-size: 14px;
+}
+.afu-slack-modal__channel::placeholder {
+  color: #b69ab8;
+}
+.afu-slack-modal__ephemeral-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #d4a3d6;
+  cursor: pointer;
+  user-select: none;
+}
+.afu-slack-modal__thread {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-slack-modal__label {
+  padding: 0 12px;
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.afu-slack-modal__input {
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+.afu-slack-modal__text {
+  padding: 14px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  min-height: 140px;
+  font-family: inherit;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-slack-modal__notes {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  align-items: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-slack-modal__notes .afu-slack-modal__label {
+  padding: 12px 12px;
+  font-size: 11px;
+}
+.afu-slack-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+.afu-slack-modal__btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  font-size: 13px;
+}
+.afu-slack-modal__btn--primary {
+  background: #007a5a;
+  color: #fff;
+}
+.afu-slack-modal__btn--primary:hover {
+  background: #006646;
+}
+.afu-slack-modal__btn--secondary {
+  background: transparent;
+  color: #5f6368;
+  border-color: #dadce0;
+}
+.afu-slack-modal__btn--secondary:hover {
+  background: #f1f3f4;
+}
+
+/* Unknown action fallback (FeedbackProvider default) */
+.afu-unknown-action {
+  background: #fff;
+  border: 1px solid #f87171;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.afu-unknown-action__header {
+  color: #991b1b;
+}
+.afu-unknown-action__header strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.afu-unknown-action__header small {
+  color: #6b7280;
+  font-size: 12px;
+}
+.afu-unknown-action__payload {
+  margin: 0;
+}
+.afu-unknown-action__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.afu-unknown-action__actions button {
+  padding: 6px 14px;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+}
+.afu-unknown-action__actions button:hover {
+  background: #fafafa;
+}
+
+/* The provider renders the modal at the end of children — in the
+ * playground that means it falls outside the center panel. Pin it
+ * over that panel via fixed-ish positioning. */
+.afu-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+.afu-modal::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  z-index: -1;
+}
 
 /* Footer */
 .afu-playground__footer {

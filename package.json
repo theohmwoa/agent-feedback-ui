@@ -17,6 +17,10 @@
     "./templates": {
       "import": "./dist/templates.js",
       "types": "./dist/templates.d.ts"
+    },
+    "./react": {
+      "import": "./dist/react.js",
+      "types": "./dist/react.d.ts"
     }
   },
   "files": [
