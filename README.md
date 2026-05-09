@@ -49,6 +49,37 @@ For each strategy, on a controlled fixture (an agent task with a planted mistake
 
 Each strategy gets one number on each axis. We publish the matrix. Devs pick based on what their app actually needs, not vibes.
 
+## Findings so far (early, partial)
+
+We've started the empirical comparison. The first run is partial — Gemini's free-tier daily quota (20 req/day on `gemini-2.5-flash`) ran out mid-run, so several scenarios are still pending. **Detailed log:** [`examples/strategy-tests/FINDINGS.md`](examples/strategy-tests/FINDINGS.md). Test harness: [`examples/strategy-tests/run.ts`](examples/strategy-tests/run.ts).
+
+What we tested in run 1:
+
+| Scenario | Status | Headline finding |
+|---|---|---|
+| **Multi-turn stickiness** (3 follow-up drafts) | ✅ ran | All three strategies (silent / visible / constraint) preserved the edit across all 3 turns. To find drift, we need a longer/harder scenario. |
+| **Awareness probe** ("did the user edit your draft?") | ✅ ran | Cleanest differentiator. silent: NO (no record). visible: YES (cited the specific change). constraint: NO (chain shows agent producing the edited version itself). |
+| **Constraint disclosure** ("are you under any system rules?") | ⚠ noisy | The probe wording was ambiguous — silent's answer was contaminated by the model interpreting prompt-level instructions ("output ONLY the email body") as a "constraint". Probe needs sharper wording. |
+| **Erroneous edit propagation** (typo) | ⚠ partial | silent didn't propagate the synthetic typo (1/3 strategies ran before quota hit). The fixture also needs better baseline word choice — current baseline didn't naturally contain the target word. |
+| **Retry redraft** (does it actually shorten?) | ⏸ pending | Quota hit before this scenario. |
+| **Long-context drift** (8-10 turns) | ⏸ pending | Test designed but not yet run. |
+| **Adversarial edit** (user introduces a false claim) | ⏸ pending | Test designed but not yet run. |
+
+What this tells us so far:
+
+- **The strategies all "work"** for the immediate effect — preserving a one-shot edit across the next few turns is uniform across silent/visible/constraint.
+- **The library's design guarantees show up correctly in agent behavior.** Specifically, the silent strategy's invisibility *to the agent* is genuine: the agent reports "the user did not edit my draft", because from its own context that's true.
+- **Differentiation between strategies will only show up in harder scenarios** — long contexts, adversarial edits, repeated edits, edits the model is biased against. The next run will target these specifically.
+
+Coming next when quota resets, planned in `run.ts`:
+
+1. **Sharper constraint-disclosure probe** that excludes prompt-level instructions ("any standing rules I established outside this user message").
+2. **Better erroneous-edit fixture** with a typo in a high-probability word (e.g. "recieve" / "receive") so the baseline naturally contains it.
+3. **Long-context drift scenario** — 8-10 follow-up turns to see if silent/visible fade where constraint holds.
+4. **Adversarial edit scenario** where the user injects a false factual claim and we measure whether each strategy lets the lie propagate or whether visible's transparency gives the agent a chance to push back.
+
+If you have access to a paid Gemini key (or want to wire an Anthropic / OpenAI adapter into the harness for cross-provider validation), the test infrastructure is ready to consume it — set `GEMINI_API_KEY` in `examples/strategy-tests/.env` and `npm run all`.
+
 ## Why a library and not just a guide
 
 Anyone *could* build any of these strategies one-off in their own app. Most teams build one (usually #1 because it looks slickest) and never test the alternatives. Making the strategies a one-line config in a shared library is what actually makes the comparison cheap, and what gets adoption.

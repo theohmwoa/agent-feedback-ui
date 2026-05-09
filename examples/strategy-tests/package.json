@@ -5,11 +5,18 @@
   "type": "module",
   "scripts": {
     "run": "tsx run.ts",
+    "all": "tsx run.ts all",
     "stickiness": "tsx run.ts stickiness",
+    "awareness": "tsx run.ts awareness",
+    "erroneous": "tsx run.ts erroneous",
     "retry": "tsx run.ts retry",
-    "all": "tsx run.ts all"
+    "drift": "tsx run.ts drift",
+    "adversarial": "tsx run.ts adversarial"
   },
   "dependencies": {
     "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2"
   }
 }
