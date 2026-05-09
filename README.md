@@ -66,4 +66,4 @@ The protocol is JSON-over-anything (HTTP, websocket, in-process). The first fron
 
 ## License
 
-TBD. Likely MIT.
+[MIT](LICENSE).
