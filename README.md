@@ -53,7 +53,7 @@ Each strategy gets one number on each axis. We publish the matrix. Devs pick bas
 
 Anyone *could* build any of these strategies one-off in their own app. Most teams build one (usually #1 because it looks slickest) and never test the alternatives. Making the strategies a one-line config in a shared library is what actually makes the comparison cheap, and what gets adoption.
 
-The protocol is JSON-over-anything (HTTP, websocket, in-process). The first frontend implementation is React; Rust TUI and a wasm bridge come later. Agent side is stack-agnostic — adapters land for the Vercel AI SDK, LangGraph, raw Anthropic / OpenAI tool-use loops, and forge.
+The protocol is JSON-over-anything (HTTP, websocket, in-process). The first frontend implementation is React; Rust TUI and a wasm bridge come later. Agent side is stack-agnostic — adapters land for the Vercel AI SDK, LangGraph, and raw Anthropic / OpenAI tool-use loops.
 
 ## Roadmap
 
@@ -63,12 +63,7 @@ The protocol is JSON-over-anything (HTTP, websocket, in-process). The first fron
 - [ ] Test harness: fixture agent + planted-mistake task suite
 - [ ] First empirical run across the four strategies, results published in this README
 - [ ] Catalog expansion (messaging, calendar, code, CRM)
-- [ ] Adapter for forge (chain-rewrite is already in forge's `fork_chain`)
-
-## Why this is a different project from forge
-
-[forge](https://github.com/theohmwoa/forge) is the run-graph + routing infrastructure under an agent loop. This is the human-feedback layer above one. They compose: forge stores the chain, agent-feedback-ui edits it. But the audiences differ (UI devs vs infra devs) and the language stacks differ (TS-first for the templates vs Rust-first for forge). Sister repos in the same constellation, not one project.
 
 ## License
 
-TBD. Likely MIT to match forge.
+TBD. Likely MIT.
