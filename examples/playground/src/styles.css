@@ -1,0 +1,314 @@
+/* Resets + base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f5f5f7;
+}
+button, input, textarea, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+pre {
+  margin: 0;
+  padding: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+code {
+  font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
+  font-size: 0.92em;
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* Playground layout */
+.afu-playground {
+  min-height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.afu-playground__header h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.afu-playground__header p {
+  margin: 0;
+  color: #525252;
+  max-width: 700px;
+}
+.afu-playground__main {
+  display: grid;
+  grid-template-columns: 320px 1fr 380px;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 1100px) {
+  .afu-playground__main { grid-template-columns: 1fr; }
+}
+
+.afu-playground__panel {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 18px;
+  overflow-y: auto;
+}
+.afu-playground__panel h2 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+.afu-playground__panel h2:not(:first-child) {
+  margin-top: 24px;
+}
+
+/* Strategy radio cards */
+.afu-playground__strategy-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.afu-playground__strategy {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.afu-playground__strategy:hover {
+  border-color: #c4c4c4;
+}
+.afu-playground__strategy.is-active {
+  border-color: #1a1a1a;
+  background: #fafafa;
+}
+.afu-playground__strategy strong {
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+.afu-playground__strategy-desc {
+  grid-column: 2;
+  color: #6b7280;
+  font-size: 12px;
+}
+.afu-playground__strategy input { margin: 3px 0 0; }
+
+.afu-playground__select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #d4d4d4;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.afu-playground__primary {
+  width: 100%;
+  padding: 10px 14px;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.12s;
+}
+.afu-playground__primary:hover { background: #000; }
+
+.afu-playground__placeholder {
+  padding: 24px;
+  text-align: center;
+  color: #9ca3af;
+  border: 1.5px dashed #e5e5e5;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.afu-playground__constraints {
+  margin-top: 18px;
+  padding: 12px;
+  background: #fef9c3;
+  border: 1px solid #fde047;
+  border-radius: 6px;
+}
+.afu-playground__constraints h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #854d0e;
+}
+.afu-playground__constraints ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 12px;
+}
+.afu-playground__link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #854d0e;
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+/* Output panel */
+.afu-playground__output {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.afu-playground__output h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+}
+.afu-playground__flags {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.afu-playground__flags li {
+  padding: 6px 10px;
+  background: #fafafa;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+.afu-playground__flags li small {
+  color: #6b7280;
+  margin-left: 6px;
+}
+
+/* Email modal styling — overrides the bare structural HTML from
+ * agent-feedback-ui/templates with a Gmail-evocative look. */
+.afu-email-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.afu-email-modal__banner {
+  padding: 8px 14px;
+  background: #f0f9ff;
+  border-bottom: 1px solid #bae6fd;
+  font-size: 12px;
+  color: #0c4a6e;
+}
+.afu-email-modal__banner code {
+  background: rgba(12, 74, 110, 0.08);
+  color: #0c4a6e;
+}
+.afu-email-modal__field {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-email-modal__label {
+  padding: 0 12px;
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+.afu-email-modal__input {
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+.afu-email-modal__input:focus {
+  background: #fafafa;
+}
+.afu-email-modal__body {
+  padding: 14px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  min-height: 200px;
+  font-family: inherit;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-email-modal__notes {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  align-items: center;
+  padding-bottom: 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+.afu-email-modal__notes .afu-email-modal__label {
+  padding: 12px 12px;
+  font-size: 11px;
+}
+.afu-email-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #fafafa;
+}
+.afu-email-modal__btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  font-size: 13px;
+}
+.afu-email-modal__btn--primary {
+  background: #1a73e8;
+  color: #fff;
+}
+.afu-email-modal__btn--primary:hover { background: #1557b0; }
+.afu-email-modal__btn--secondary {
+  background: transparent;
+  color: #5f6368;
+  border-color: #dadce0;
+}
+.afu-email-modal__btn--secondary:hover { background: #f1f3f4; }
+
+/* Footer */
+.afu-playground__footer {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 12px;
+  padding: 12px 0;
+}
+.afu-playground__footer a {
+  color: #6b7280;
+  text-decoration: none;
+}
+.afu-playground__footer a:hover { color: #1a1a1a; }
