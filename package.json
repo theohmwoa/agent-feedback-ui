@@ -9,6 +9,14 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./ai-sdk": {
+      "import": "./dist/ai-sdk.js",
+      "types": "./dist/ai-sdk.d.ts"
+    },
+    "./templates": {
+      "import": "./dist/templates.js",
+      "types": "./dist/templates.d.ts"
     }
   },
   "files": [
@@ -37,7 +45,20 @@
   "engines": {
     "node": ">=18"
   },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@testing-library/react": "^16.0.1",
+    "@types/react": "^18.3.12",
+    "happy-dom": "^15.7.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "typescript": "^5.6.3",
     "vitest": "^2.1.4"
   }
