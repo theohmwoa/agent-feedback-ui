@@ -20,13 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: install root deps (lib source the playground imports)
+        run: npm ci
+
+      - name: install + build playground
+        working-directory: examples/playground
+        run: |
+          npm install
+          npm run build
+
       - uses: actions/configure-pages@v5
 
-      # The playground is a single static page (CDN React + Babel-in-browser).
-      # No build step — we upload the directory verbatim.
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: examples/playground
+          path: examples/playground/dist
 
   deploy:
     needs: build

@@ -798,6 +798,14 @@ code, pre, .mono { font-family: var(--font-mono); font-feature-settings: "calt";
   font-weight: 600; font-size: 13px;
   padding: 8px 14px; border-radius: 6px;
 }
+.modal-email .me-actions { display: inline-flex; gap: 8px; align-items: center; }
+.modal-email .me-discard {
+  background: transparent; color: #6b5e44;
+  font-weight: 500; font-size: 13px;
+  padding: 8px 14px; border-radius: 6px;
+  border: 1px solid #d6c8ad;
+}
+.modal-email .me-discard:hover { background: rgba(0,0,0,0.04); color: #4a4030; }
 
 /* Chat modal — aubergine, original */
 .modal-chat {
@@ -861,6 +869,19 @@ code, pre, .mono { font-family: var(--font-mono); font-feature-settings: "calt";
   border: 1px solid #6e4895;
 }
 .modal-chat .mc-send:hover { background: linear-gradient(180deg, #6a4690, #573279); }
+.modal-chat .mc-actions { display: inline-flex; gap: 8px; align-items: center; }
+.modal-chat .mc-discard {
+  background: transparent; color: #9883b0;
+  font-weight: 500; font-size: 13px;
+  padding: 8px 14px; border-radius: 6px;
+  border: 1px solid #3a2950;
+}
+.modal-chat .mc-discard:hover { background: rgba(255,255,255,0.04); color: #c8b3da; }
+.modal-chat .mc-channel-input {
+  background: transparent; border: 0; outline: none;
+  color: inherit; font: inherit; font-weight: 600; min-width: 90px;
+  padding: 0;
+}
 
 .modal-foot-shared {
   padding: 10px 16px;
