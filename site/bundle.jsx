@@ -59,6 +59,11 @@ const Icon = {
   Layers:  _i(<><path d="m12 2 10 6-10 6L2 8z" /><path d="m2 16 10 6 10-6" /><path d="m2 12 10 6 10-6" /></>),
   Logo:    _i(<><circle cx="12" cy="12" r="9" strokeWidth="1.4" /><path d="M7 12h10M12 7v10" strokeWidth="1.4" /></>),
   GitHub:  _i(<><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.36-1.34-3.36-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" stroke="none" fill="currentColor" /></>),
+  Search:  _i(<><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>),
+  Sun:     _i(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></>),
+  Moon:    _i(<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" /></>),
+  Share:   _i(<><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></>),
+  ExternalLink: _i(<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><path d="M15 3h6v6M10 14 21 3" /></>),
 };
 
 window.Icon = Icon;
@@ -1412,7 +1417,7 @@ const HERO_LINES = [
   { kind: "ok",     text: "ready · import { EmailCompose } from \"@/components/agent-ui/email-compose\"" },
 ];
 
-function Hero() {
+function Hero({ onBrowse, onOpenPalette }) {
   const [step, setStep] = React.useState(0);
   const [typed, setTyped] = React.useState("");
   const cmd = HERO_LINES[0].text;
@@ -1514,15 +1519,35 @@ function Hero() {
 
         {/* CTA row */}
         <div style={{ marginTop: 28, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-          <Button variant="primary" size="lg" iconRight={<Icon.ArrowRight size={15} />}>
+          <Button
+            variant="primary"
+            size="lg"
+            iconRight={<Icon.ArrowRight size={15} />}
+            onClick={onBrowse}
+          >
             Browse components
           </Button>
-          <Button variant="default" size="lg" icon={<Icon.GitHub size={15} />}>
-            agent-ui on GitHub
-          </Button>
-          <span style={{ marginLeft: 8, fontSize: 12.5, fontFamily: "var(--font-mono)", color: "var(--fg-faint)" }}>
+          <a
+            href={REPO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
+          >
+            <Button variant="default" size="lg" icon={<Icon.GitHub size={15} />}>
+              agent-ui on GitHub
+            </Button>
+          </a>
+          <button
+            onClick={onOpenPalette}
+            aria-label="Open command palette"
+            style={{
+              marginLeft: 8, fontSize: 12.5, fontFamily: "var(--font-mono)",
+              color: "var(--fg-faint)", display: "inline-flex", alignItems: "center", gap: 6,
+              background: "transparent", border: 0, cursor: "pointer",
+            }}
+          >
             <Kbd>⌘</Kbd> <Kbd>K</Kbd> &nbsp;to search
-          </span>
+          </button>
         </div>
 
         {/* Demo grid */}
@@ -1704,7 +1729,7 @@ const REGISTRY = [
 
 function Browser({ onPick }) {
   return (
-    <section style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
+    <section id="browser" style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
       <div className="wrap">
         <SectionHeader
           eyebrow="components/"
@@ -1735,7 +1760,15 @@ function Browser({ onPick }) {
           fontFamily: "var(--font-mono)",
         }}>
           <span>{REGISTRY.filter(r => r.status === "stable").length} stable · {REGISTRY.filter(r => r.status === "soon").length} on the way</span>
-          <span style={{ color: "var(--fg-faint)" }}>request a component → /components/request</span>
+          <a
+            href={REPO_URL + "/issues/new?labels=component-request&template=component-request.md"}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "var(--fg-muted)", display: "inline-flex", alignItems: "center", gap: 4 }}
+          >
+            request a component
+            <Icon.ExternalLink size={11} style={{ color: "var(--fg-faint)" }} />
+          </a>
         </div>
       </div>
     </section>
@@ -1745,9 +1778,17 @@ function Browser({ onPick }) {
 function ComponentCard({ c, onPick }) {
   const [hover, setHover] = React.useState(false);
   const isStable = c.status === "stable";
+  // Use a real anchor so right-click → "copy link" works for shareable URLs.
+  const Tag = isStable ? "a" : "div";
+  const tagProps = isStable
+    ? {
+        href: "#" + c.id,
+        onClick: (e) => { e.preventDefault(); onPick?.(c.id); },
+      }
+    : {};
   return (
-    <button
-      onClick={() => isStable && onPick?.(c.id)}
+    <Tag
+      {...tagProps}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
@@ -1763,6 +1804,8 @@ function ComponentCard({ c, onPick }) {
         transform: hover && isStable ? "translateY(-2px)" : "none",
         borderColor: hover && isStable ? "var(--border-strong)" : "var(--border)",
         opacity: isStable ? 1 : 0.66,
+        textDecoration: "none",
+        color: "inherit",
       }}
     >
       {/* Mini-preview */}
@@ -1807,7 +1850,7 @@ function ComponentCard({ c, onPick }) {
           {c.summary}
         </div>
       </div>
-    </button>
+    </Tag>
   );
 }
 
@@ -1982,7 +2025,7 @@ const PROPS = {
   ],
 };
 
-function Showcase({ id }) {
+function Showcase({ id, onShare }) {
   const c = REGISTRY.find(r => r.id === id);
   if (!c || c.status !== "stable") return null;
 
@@ -2009,6 +2052,21 @@ function Showcase({ id }) {
               {c.name}
               <span style={{ color: "var(--fg-faint)" }}>·</span>
               <span style={{ color: "var(--fg-faint)" }}>{c.loc} LOC</span>
+              <button
+                onClick={() => onShare?.(c.id)}
+                aria-label={`Copy share link for ${c.title}`}
+                style={{
+                  marginLeft: 4, padding: "0 4px",
+                  display: "inline-flex", alignItems: "center", gap: 4,
+                  background: "transparent", border: 0, cursor: "pointer",
+                  color: "var(--fg-faint)", font: "inherit",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = "var(--fg)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = "var(--fg-faint)"; }}
+              >
+                <Icon.Share size={11} />
+                <span>share</span>
+              </button>
             </div>
             <h3 style={{
               margin: 0, fontSize: 34, fontWeight: 600,
@@ -2097,23 +2155,34 @@ function PreviewStage({ Comp, setResult, accent }) {
   );
 }
 
-function CodeBlock({ code }) {
-  // Tiny syntax-ish highlighter: tokens by regex.
-  const highlight = (line) => {
-    const out = [];
-    const tokens = line.split(/(\bimport\b|\bfrom\b|\bexport\b|\bfunction\b|\breturn\b|\bconst\b|\blet\b|\btype\b|\bif\b|\belse\b|"[^"]*"|'[^']*'|\/\/.*$|\{|\}|\(|\)|<|>|\?|=>|:|;|,)/);
-    let key = 0;
-    for (const t of tokens) {
-      if (!t) continue;
-      let color = "var(--fg)";
-      if (/^\/\//.test(t)) color = "var(--fg-faint)";
-      else if (/^["']/.test(t)) color = "var(--c-ok)";
-      else if (/^(import|from|export|function|return|const|let|type|if|else)$/.test(t)) color = "var(--c-mail)";
-      else if (/^[{}()<>;:,?]$|=>/.test(t)) color = "var(--fg-faint)";
-      out.push(<span key={key++} style={{ color }}>{t}</span>);
-    }
-    return out;
-  };
+// Real TSX/bash highlighting via Prism (loaded from CDN in index.html).
+// Falls back to plaintext if Prism isn't available yet.
+function highlightCode(code, lang = "tsx") {
+  const Prism = window.Prism;
+  if (!Prism || !Prism.languages || !Prism.languages[lang]) {
+    // escape so the fallback is at least safe
+    return code
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+  try {
+    return Prism.highlight(code, Prism.languages[lang], lang);
+  } catch {
+    return code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+}
+
+function CodeBlock({ code, lang = "tsx", filename = "example.tsx" }) {
+  // Render to HTML once per code change. Use innerHTML on a <pre> wrapper.
+  const html = React.useMemo(() => highlightCode(code, lang), [code, lang]);
+  const lines = code.split("\n");
+  // Each line is highlighted independently so the line-number gutter stays aligned.
+  // Prism is forgiving across line boundaries for the languages we use here.
+  const lineHtml = React.useMemo(
+    () => lines.map(line => highlightCode(line === "" ? " " : line, lang)),
+    [code, lang],
+  );
   return (
     <div style={{
       background: "oklch(0.11 0.005 80)",
@@ -2129,22 +2198,29 @@ function CodeBlock({ code }) {
         padding: "10px 14px",
         borderBottom: "1px solid var(--border-faint)",
       }}>
-        <span style={{ fontSize: 11.5, color: "var(--fg-faint)" }}>example.tsx</span>
+        <span style={{ fontSize: 11.5, color: "var(--fg-faint)", fontFamily: "var(--font-mono)" }}>
+          {filename}
+        </span>
         <div style={{ flex: 1 }} />
         <CopyButton value={code} label="copy" />
       </div>
-      <pre style={{
+      <pre className={`language-${lang}`} style={{
         margin: 0, padding: "16px 18px",
         color: "var(--fg)",
-        whiteSpace: "pre-wrap",
-        wordBreak: "break-word",
+        whiteSpace: "pre",
+        overflowX: "auto",
       }}>
-        {code.split("\n").map((line, i) => (
-          <div key={i} style={{ display: "flex", gap: 16 }}>
-            <span style={{ color: "var(--fg-faint)", width: 22, textAlign: "right", userSelect: "none" }}>{i + 1}</span>
-            <span style={{ flex: 1 }}>{highlight(line)}</span>
-          </div>
-        ))}
+        <code className={`language-${lang}`} style={{ display: "block" }}>
+          {lineHtml.map((h, i) => (
+            <div key={i} style={{ display: "flex", gap: 16 }}>
+              <span aria-hidden="true" style={{
+                color: "var(--fg-faint)", width: 22, textAlign: "right",
+                userSelect: "none", flexShrink: 0,
+              }}>{i + 1}</span>
+              <span style={{ flex: 1 }} dangerouslySetInnerHTML={{ __html: h }} />
+            </div>
+          ))}
+        </code>
       </pre>
     </div>
   );
@@ -2200,7 +2276,304 @@ window.SOURCE_SNIPPETS = SOURCE_SNIPPETS;
 // ============================================================
 // App — top nav, hero, browser grid, three showcases, principles strip, footer.
 
-function Nav() {
+const REPO_URL = "https://github.com/theohmwoa/agent-feedback-ui";
+
+// ---------- useTheme — dark/light, persisted, applied to <html data-theme> ----------
+function useTheme() {
+  const [theme, setTheme] = React.useState(() => {
+    try { return localStorage.getItem("agent-ui-theme") || "dark"; }
+    catch { return "dark"; }
+  });
+  React.useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    try { localStorage.setItem("agent-ui-theme", theme); } catch {}
+  }, [theme]);
+  return { theme, toggle: () => setTheme(t => t === "dark" ? "light" : "dark") };
+}
+
+// ---------- useHashRoute — read hash, scroll on changes, expose helper to push ----------
+function useHashRoute() {
+  const [hash, setHash] = React.useState(() =>
+    typeof window === "undefined" ? "" : window.location.hash.replace(/^#/, "")
+  );
+  React.useEffect(() => {
+    const onChange = () => setHash(window.location.hash.replace(/^#/, ""));
+    window.addEventListener("hashchange", onChange);
+    return () => window.removeEventListener("hashchange", onChange);
+  }, []);
+  // On every hash change (incl. initial mount), scroll to the element.
+  React.useEffect(() => {
+    if (!hash) return;
+    // Wait one frame so the section has mounted.
+    const t = setTimeout(() => {
+      const el = document.getElementById(hash);
+      if (el) window.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
+    }, 30);
+    return () => clearTimeout(t);
+  }, [hash]);
+  return {
+    hash,
+    push: (id) => {
+      if (window.location.hash === "#" + id) {
+        // same hash — force scroll
+        const el = document.getElementById(id);
+        if (el) window.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
+      } else {
+        history.pushState(null, "", "#" + id);
+        setHash(id);
+      }
+    },
+  };
+}
+
+// ---------- buildPaletteItems — pulls from REGISTRY, plus sections + actions ----------
+function buildPaletteItems() {
+  const items = [];
+  for (const c of REGISTRY) {
+    items.push({
+      kind: "component",
+      id: c.id,
+      name: c.title,
+      slug: c.name,
+      desc: c.summary,
+      stable: c.status === "stable",
+      accent: c.accent,
+    });
+  }
+  items.push(
+    { kind: "section", id: "browser",    name: "Browse all components", desc: "Component grid" },
+    { kind: "section", id: "cli",        name: "CLI",                   desc: "Install commands" },
+    { kind: "section", id: "principles", name: "Principles",            desc: "What's in the box" },
+  );
+  items.push(
+    { kind: "action", id: "github",       name: "Open GitHub repo",     desc: "theohmwoa/agent-feedback-ui" },
+    { kind: "action", id: "copy-install", name: "Copy install command", desc: "npx agent-ui add …" },
+    { kind: "action", id: "theme-toggle", name: "Toggle theme",         desc: "Switch dark / light" },
+  );
+  return items;
+}
+
+// ---------- CommandPalette ----------
+function CommandPalette({ open, onClose, onPick, onTheme, onCopy }) {
+  const [q, setQ] = React.useState("");
+  const [sel, setSel] = React.useState(0);
+  const inputRef = React.useRef(null);
+  const listRef = React.useRef(null);
+
+  const items = React.useMemo(buildPaletteItems, []);
+  const filtered = React.useMemo(() => {
+    const qq = q.trim().toLowerCase();
+    if (!qq) return items;
+    return items
+      .map(it => {
+        const hay = (it.name + " " + (it.slug || "") + " " + (it.desc || "") + " " + it.id).toLowerCase();
+        const idx = hay.indexOf(qq);
+        return idx === -1 ? null : { it, idx };
+      })
+      .filter(Boolean)
+      .sort((a, b) => a.idx - b.idx)
+      .map(x => x.it);
+  }, [q, items]);
+
+  React.useEffect(() => { setSel(0); }, [q]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    setQ(""); setSel(0);
+    const t = setTimeout(() => inputRef.current?.focus(), 30);
+    return () => clearTimeout(t);
+  }, [open]);
+
+  const doAction = React.useCallback((item) => {
+    if (!item) return;
+    if (item.kind === "action") {
+      if (item.id === "github") window.open(REPO_URL, "_blank", "noopener");
+      else if (item.id === "theme-toggle") onTheme();
+      else if (item.id === "copy-install") onCopy("npx agent-ui add email-compose slack-message linear-issue");
+    } else if (item.kind === "component") {
+      if (item.stable) onPick(item.id);
+      else onPick("browser");
+    } else if (item.kind === "section") {
+      onPick(item.id);
+    }
+    onClose();
+  }, [onPick, onTheme, onCopy, onClose]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape")    { e.preventDefault(); onClose(); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); setSel(s => Math.min(filtered.length - 1, s + 1)); }
+      else if (e.key === "ArrowUp")   { e.preventDefault(); setSel(s => Math.max(0, s - 1)); }
+      else if (e.key === "Enter")     { e.preventDefault(); doAction(filtered[sel]); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, filtered, sel, onClose, doAction]);
+
+  // Keep selected row in view as user navigates
+  React.useEffect(() => {
+    if (!open || !listRef.current) return;
+    const node = listRef.current.querySelector(`[data-idx="${sel}"]`);
+    if (node && node.scrollIntoView) node.scrollIntoView({ block: "nearest" });
+  }, [sel, open]);
+
+  if (!open) return null;
+
+  const groups = [
+    { kind: "component", title: "Components" },
+    { kind: "section",   title: "Sections" },
+    { kind: "action",    title: "Actions" },
+  ];
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command palette"
+      onMouseDown={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 200,
+        background: "color-mix(in oklch, black 55%, transparent)",
+        backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "flex-start", justifyContent: "center",
+        paddingTop: "14vh", paddingLeft: 16, paddingRight: 16,
+        animation: "fade-in .14s ease",
+      }}
+    >
+      <div
+        onMouseDown={e => e.stopPropagation()}
+        style={{
+          width: "min(620px, 100%)",
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-strong)",
+          borderRadius: 14,
+          overflow: "hidden",
+          boxShadow: "0 30px 80px -20px rgb(0 0 0 / 0.6), 0 12px 24px -8px rgb(0 0 0 / 0.4)",
+          animation: "rise-in .18s cubic-bezier(.2,.9,.2,1)",
+        }}
+      >
+        {/* Search row */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12,
+          padding: "12px 14px",
+          borderBottom: "1px solid var(--border-faint)",
+        }}>
+          <Icon.Search size={15} style={{ color: "var(--fg-faint)" }} />
+          <input
+            ref={inputRef}
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            placeholder="Jump to a component, section, or action…"
+            style={{
+              flex: 1, background: "transparent", border: 0, outline: 0,
+              fontSize: 14, color: "var(--fg)",
+              fontFamily: "var(--font-sans)",
+            }}
+          />
+          <Kbd>esc</Kbd>
+        </div>
+
+        {/* Results */}
+        <div ref={listRef} style={{ maxHeight: "52vh", overflowY: "auto", padding: 6 }}>
+          {filtered.length === 0 && (
+            <div style={{
+              padding: "28px 16px", textAlign: "center",
+              fontSize: 13, color: "var(--fg-faint)",
+            }}>
+              No matches. Try <span style={{ fontFamily: "var(--font-mono)", color: "var(--fg-muted)" }}>email</span>,{" "}
+              <span style={{ fontFamily: "var(--font-mono)", color: "var(--fg-muted)" }}>slack</span>, or{" "}
+              <span style={{ fontFamily: "var(--font-mono)", color: "var(--fg-muted)" }}>github</span>.
+            </div>
+          )}
+          {groups.map(g => {
+            const inGroup = filtered.filter(it => it.kind === g.kind);
+            if (inGroup.length === 0) return null;
+            return (
+              <div key={g.kind}>
+                <div style={{
+                  padding: "10px 10px 4px",
+                  fontSize: 10.5, fontFamily: "var(--font-mono)",
+                  textTransform: "uppercase", letterSpacing: 0.6,
+                  color: "var(--fg-faint)",
+                }}>{g.title}</div>
+                {inGroup.map(item => {
+                  const idx = filtered.indexOf(item);
+                  const active = idx === sel;
+                  return (
+                    <button
+                      key={item.kind + ":" + item.id}
+                      data-idx={idx}
+                      onMouseEnter={() => setSel(idx)}
+                      onClick={() => doAction(item)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: 12,
+                        width: "100%", padding: "10px 12px",
+                        background: active ? "var(--bg-inset)" : "transparent",
+                        border: "1px solid " + (active ? "var(--border)" : "transparent"),
+                        borderRadius: 8,
+                        textAlign: "left", fontSize: 13,
+                        color: "var(--fg)",
+                        cursor: "pointer",
+                        marginBottom: 1,
+                      }}
+                    >
+                      <span style={{
+                        width: 22, display: "inline-flex", justifyContent: "center",
+                        color: "var(--fg-faint)",
+                      }}>
+                        {item.kind === "action" && item.id === "github"        && <Icon.GitHub size={14} />}
+                        {item.kind === "action" && item.id === "theme-toggle"  && <Icon.Sun size={14} />}
+                        {item.kind === "action" && item.id === "copy-install"  && <Icon.Terminal size={14} />}
+                        {item.kind === "section"                                && <Icon.ChevronRight size={14} />}
+                        {item.kind === "component" && <Dot color={item.accent || "var(--fg-faint)"} size={6} />}
+                      </span>
+                      <span style={{ fontWeight: 500 }}>{item.name}</span>
+                      <span style={{ flex: 1 }} />
+                      {item.desc && (
+                        <span style={{
+                          color: "var(--fg-faint)", fontSize: 12,
+                          maxWidth: 280, overflow: "hidden",
+                          textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>{item.desc}</span>
+                      )}
+                      {item.kind === "component" && !item.stable && (
+                        <Pill size="xs">soon</Pill>
+                      )}
+                      {active && <Icon.ArrowRight size={13} style={{ color: "var(--fg-faint)" }} />}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Hint footer */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 14,
+          padding: "8px 14px",
+          borderTop: "1px solid var(--border-faint)",
+          fontFamily: "var(--font-mono)", fontSize: 11,
+          color: "var(--fg-faint)",
+        }}>
+          <span><Kbd>↑</Kbd><Kbd>↓</Kbd> <span style={{ marginLeft: 4 }}>navigate</span></span>
+          <span><Kbd>↵</Kbd> <span style={{ marginLeft: 4 }}>select</span></span>
+          <span><Kbd>esc</Kbd> <span style={{ marginLeft: 4 }}>close</span></span>
+          <div style={{ flex: 1 }} />
+          <span>{filtered.length} item{filtered.length === 1 ? "" : "s"}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Nav({ onOpenPalette, onNav, theme, onTheme }) {
+  const navLinks = [
+    { label: "Components", target: "browser" },
+    { label: "CLI",        target: "cli" },
+    { label: "Principles", target: "principles" },
+  ];
   return (
     <nav style={{
       position: "sticky",
@@ -2214,7 +2587,12 @@ function Nav() {
         height: 56,
       }}>
         {/* Logo */}
-        <a href="#top" style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+        <a
+          href="#top"
+          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          style={{ display: "inline-flex", alignItems: "center", gap: 10 }}
+          aria-label="agent-ui — back to top"
+        >
           <span style={{
             width: 22, height: 22,
             borderRadius: 6,
@@ -2235,34 +2613,68 @@ function Nav() {
         </a>
 
         <div style={{ display: "flex", gap: 22, marginLeft: 12 }}>
-          {["Components", "Docs", "CLI", "Theming", "Changelog"].map((l, i) => (
-            <a key={l} href="#" style={{
-              fontSize: 13.5,
-              color: i === 0 ? "var(--fg)" : "var(--fg-muted)",
-              fontWeight: i === 0 ? 500 : 400,
-            }}>{l}</a>
+          {navLinks.map((l) => (
+            <a
+              key={l.label}
+              href={"#" + l.target}
+              onClick={(e) => { e.preventDefault(); onNav(l.target); }}
+              style={{
+                fontSize: 13.5,
+                color: "var(--fg-muted)",
+                fontWeight: 400,
+              }}
+            >{l.label}</a>
           ))}
         </div>
 
         <div style={{ flex: 1 }} />
 
-        {/* Search */}
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          height: 32, padding: "0 10px",
-          background: "var(--bg-inset)",
-          border: "1px solid var(--border)",
-          borderRadius: 8,
-          fontSize: 12.5,
-          color: "var(--fg-faint)",
-          minWidth: 220,
-        }}>
-          <span style={{ fontFamily: "var(--font-mono)" }}>Search components…</span>
+        {/* Search — opens command palette */}
+        <button
+          onClick={onOpenPalette}
+          aria-label="Open command palette"
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            height: 32, padding: "0 10px",
+            background: "var(--bg-inset)",
+            border: "1px solid var(--border)",
+            borderRadius: 8,
+            fontSize: 12.5,
+            color: "var(--fg-faint)",
+            minWidth: 240,
+            cursor: "pointer",
+            transition: "border-color .12s",
+          }}
+        >
+          <Icon.Search size={13} />
+          <span style={{ fontFamily: "var(--font-sans)" }}>Search components…</span>
           <div style={{ flex: 1 }} />
           <Kbd>⌘</Kbd><Kbd>K</Kbd>
-        </div>
+        </button>
 
-        <IconButton icon={<Icon.GitHub size={16} />} label="GitHub" size={32} />
+        <IconButton
+          icon={theme === "dark" ? <Icon.Sun size={16} /> : <Icon.Moon size={16} />}
+          label={theme === "dark" ? "Switch to light" : "Switch to dark"}
+          size={32}
+          onClick={onTheme}
+        />
+        <a
+          href={REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub repository"
+          style={{
+            width: 32, height: 32,
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            borderRadius: 8,
+            color: "var(--fg-dim)",
+            transition: "background .12s, color .12s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "var(--bg-inset)"; e.currentTarget.style.color = "var(--fg)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--fg-dim)"; }}
+        >
+          <Icon.GitHub size={16} />
+        </a>
       </div>
     </nav>
   );
@@ -2292,7 +2704,7 @@ function Principles() {
     },
   ];
   return (
-    <section style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
+    <section id="principles" style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
       <div className="wrap">
         <SectionHeader
           eyebrow="principles/"
@@ -2341,7 +2753,7 @@ function CLISection() {
     { c: "npx agent-ui diff email-compose", n: "see what changed since you copied it" },
   ];
   return (
-    <section style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
+    <section id="cli" style={{ padding: "80px 0", borderBottom: "1px solid var(--border)" }}>
       <div className="wrap">
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 64, alignItems: "start" }}>
           <div>
@@ -2386,7 +2798,7 @@ function CLISection() {
   );
 }
 
-function Footer() {
+function Footer({ onNav }) {
   return (
     <footer style={{ padding: "60px 0 80px" }}>
       <div className="wrap">
@@ -2409,9 +2821,19 @@ function Footer() {
             </p>
           </div>
           <div style={{ display: "flex", gap: 48, fontSize: 13, color: "var(--fg-muted)" }}>
-            <FooterCol title="Library" items={["Components", "Theming", "CLI reference", "Changelog"]} />
-            <FooterCol title="Project" items={["GitHub", "Discord", "Roadmap", "Sponsor"]} />
-            <FooterCol title="Legal" items={["MIT license", "Acknowledgements"]} />
+            <FooterCol title="Library" items={[
+              { label: "Components",   onClick: () => onNav("browser") },
+              { label: "CLI",          onClick: () => onNav("cli") },
+              { label: "Principles",   onClick: () => onNav("principles") },
+            ]} />
+            <FooterCol title="Project" items={[
+              { label: "GitHub",       href: REPO_URL },
+              { label: "Issues",       href: REPO_URL + "/issues" },
+              { label: "Discussions",  href: REPO_URL + "/discussions" },
+            ]} />
+            <FooterCol title="Legal" items={[
+              { label: "MIT license",  href: REPO_URL + "/blob/main/LICENSE" },
+            ]} />
           </div>
         </div>
         <div style={{
@@ -2440,29 +2862,130 @@ function FooterCol({ title, items }) {
         marginBottom: 12,
       }}>{title}</div>
       <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 8 }}>
-        {items.map(i => <li key={i}><a href="#" style={{ color: "var(--fg-muted)" }}>{i}</a></li>)}
+        {items.map(i => (
+          <li key={i.label}>
+            {i.href ? (
+              <a
+                href={i.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--fg-muted)", display: "inline-flex", alignItems: "center", gap: 4 }}
+              >
+                {i.label}
+                <Icon.ExternalLink size={11} style={{ color: "var(--fg-faint)" }} />
+              </a>
+            ) : (
+              <button
+                onClick={i.onClick}
+                style={{ color: "var(--fg-muted)", padding: 0, background: "transparent", border: 0, cursor: "pointer", font: "inherit", textAlign: "left" }}
+              >{i.label}</button>
+            )}
+          </li>
+        ))}
       </ul>
     </div>
   );
 }
 
 function App() {
-  // Smooth-scroll to a component when clicked from the grid.
-  const onPick = (id) => {
-    const el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.offsetTop - 56, behavior: "smooth" });
-  };
+  const { theme, toggle: toggleTheme } = useTheme();
+  const { push: pushHash } = useHashRoute();
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [copied, setCopied] = React.useState(null); // { msg } | null
+
+  // Smooth-scroll to a component when clicked from the grid OR palette.
+  // Also updates the URL hash so the link is shareable.
+  const navigate = React.useCallback((id) => {
+    if (!id) return;
+    pushHash(id);
+  }, [pushHash]);
+
+  // Global ⌘K / Ctrl+K hotkey to toggle the palette.
+  React.useEffect(() => {
+    const onKey = (e) => {
+      const isMeta = e.metaKey || e.ctrlKey;
+      if (isMeta && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen(o => !o);
+      }
+      // also "/" to focus search like GitHub, when not already typing
+      if (e.key === "/" && !paletteOpen) {
+        const t = e.target;
+        const typing = t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+        if (!typing) { e.preventDefault(); setPaletteOpen(true); }
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [paletteOpen]);
+
+  const handleCopy = React.useCallback((value) => {
+    try { navigator.clipboard?.writeText(value); } catch {}
+    setCopied({ msg: "Copied to clipboard", value });
+  }, []);
+
+  React.useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(null), 2400);
+    return () => clearTimeout(t);
+  }, [copied]);
+
   return (
     <div id="top">
-      <Nav />
-      <Hero />
-      <Browser onPick={onPick} />
-      <Showcase id="email-compose" />
-      <Showcase id="slack-message" />
-      <Showcase id="linear-issue" />
+      <Nav
+        onOpenPalette={() => setPaletteOpen(true)}
+        onNav={navigate}
+        theme={theme}
+        onTheme={toggleTheme}
+      />
+      <Hero
+        onBrowse={() => navigate("browser")}
+        onOpenPalette={() => setPaletteOpen(true)}
+      />
+      <Browser onPick={navigate} />
+      <Showcase id="email-compose" onShare={(id) => handleCopy(window.location.origin + window.location.pathname + "#" + id)} />
+      <Showcase id="slack-message" onShare={(id) => handleCopy(window.location.origin + window.location.pathname + "#" + id)} />
+      <Showcase id="linear-issue"  onShare={(id) => handleCopy(window.location.origin + window.location.pathname + "#" + id)} />
       <CLISection />
       <Principles />
-      <Footer />
+      <Footer onNav={navigate} />
+
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onPick={navigate}
+        onTheme={toggleTheme}
+        onCopy={handleCopy}
+      />
+
+      {/* Tiny global "copied" toast for palette / share actions */}
+      {copied && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "fixed", left: "50%", bottom: 28, transform: "translateX(-50%)",
+            zIndex: 1100,
+            padding: "10px 14px",
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-strong)",
+            borderRadius: 999,
+            display: "inline-flex", alignItems: "center", gap: 8,
+            fontFamily: "var(--font-mono)", fontSize: 12,
+            color: "var(--fg)",
+            boxShadow: "0 12px 32px -10px rgb(0 0 0 / .5)",
+            animation: "rise-in .25s ease",
+          }}
+        >
+          <Icon.Check size={13} style={{ color: "var(--agent-ui-accent)" }} />
+          <span>{copied.msg}</span>
+          {copied.value && (
+            <span style={{ color: "var(--fg-faint)", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              · {copied.value}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
