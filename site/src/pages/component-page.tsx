@@ -28,8 +28,28 @@ export function ComponentPage() {
     show({ msg: "Copied share link", value: url });
   };
 
-  // "Up next" — the other stable components.
-  const others = STABLE.filter(o => o.id !== c.id);
+  // "Up next" — pick four sibling components. Prefer one from the same
+  // category, fill the rest randomly. Re-rolled per slug change so each
+  // page lands on a fresh mix; this scales to a 1k+ catalog.
+  const others = React.useMemo(() => {
+    const pool = STABLE.filter(o => o.id !== c.id);
+    const sameCat = pool.filter(o => o.category && o.category === c.category);
+    const otherCat = pool.filter(o => !o.category || o.category !== c.category);
+    const shuffled = (arr: typeof pool) => [...arr].sort(() => Math.random() - 0.5);
+    const picks: typeof pool = [];
+    const fromSame = shuffled(sameCat).slice(0, 1);
+    picks.push(...fromSame);
+    for (const x of shuffled(otherCat)) {
+      if (picks.length >= 4) break;
+      picks.push(x);
+    }
+    // Fallback: if we still don't have 4, fill from same-category leftovers.
+    for (const x of shuffled(sameCat)) {
+      if (picks.length >= 4) break;
+      if (!picks.includes(x)) picks.push(x);
+    }
+    return picks;
+  }, [c.id, c.category]);
 
   return (
     <>
@@ -129,18 +149,36 @@ export function ComponentPage() {
           </div>
         </div>
 
-        {/* What's next */}
+        {/* Up next — a sample, not the catalog */}
         <section style={{ padding: "60px 0 80px" }}>
           <div className="wrap">
             <div style={{
-              fontFamily: "var(--font-mono)", fontSize: 11.5,
-              color: "var(--fg-faint)", letterSpacing: 0.4,
-              marginBottom: 14,
-            }}>up next/</div>
-            <h3 style={{
-              margin: 0, fontSize: 24, fontWeight: 600, letterSpacing: -0.4,
+              display: "flex", alignItems: "center", gap: 12,
               marginBottom: 22,
-            }}>Other components</h3>
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: 11.5,
+                  color: "var(--fg-faint)", letterSpacing: 0.4,
+                  marginBottom: 8,
+                }}>up next/</div>
+                <h3 style={{
+                  margin: 0, fontSize: 24, fontWeight: 600, letterSpacing: -0.4,
+                }}>You might also need</h3>
+              </div>
+              <div style={{ flex: 1 }} />
+              <Link
+                to="/?s=browser"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 13, color: "var(--fg-muted)",
+                  fontFamily: "var(--font-mono)",
+                }}
+              >
+                Browse all {STABLE.length}
+                <Icon.ArrowRight size={13} />
+              </Link>
+            </div>
             <div style={{
               display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12,
             }}>
