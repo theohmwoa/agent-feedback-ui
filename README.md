@@ -1,99 +1,105 @@
-# agent-feedback-ui
+# agent-ui
 
-**A library for plugging human-in-the-loop feedback into AI agent loops, via domain-shaped UI surfaces — with four different ways the human's edit can affect what the agent does next, and an empirical test suite measuring which strategy actually works for which scenarios.**
+**Beautiful UI for the moment your agent asks "send it?"**
 
-> Status: pre-zero. This README is the explainer. Code lands as sibling crates / packages once the protocol is pinned.
+A copy-paste registry of review-and-edit components for AI agent surfaces — emails, messages, issues, queries, patches. shadcn-style: run a CLI command, the source lands in your repo, you own it from there.
 
-## What this solves
+> Status: pre-zero. Three components are stable, seven more on the way. The CLI is in design — for now, [browse the components](https://theohmwoa.github.io/agent-feedback-ui/) and copy the source from this repo.
 
-Most agent frameworks treat human-in-the-loop as a yes/no approval gate. That misses the more useful interaction shape: *"the agent drafted this email — let me edit it before it goes out."* Mirage AI and a handful of others have built one-off versions of this for specific actions (an email-shaped modal pre-filled with the agent's draft, etc.). What's missing:
+## What this is
 
-1. **A general library** that lets a dev plug this pattern into any agent, not just hand-rolled per app.
-2. **A clear, opinionated answer to what the agent should think happened after the human edit.** Today everyone picks differently and nobody measures the consequences.
+When an AI agent is about to send an email, post in Slack, file a Linear issue, run a SQL query — most apps either (1) just let it rip, or (2) put up a generic "Approve / Reject" dialog. The interesting middle ground is the *review-and-edit* surface: a domain-shaped UI pre-filled with the agent's draft that the human can tweak before it ships.
 
-This repo is both pieces.
+Mirage AI and a handful of others have built one-off versions for specific actions. This is the catalog.
 
-## The library
+## What's in the box
 
-A small, framework-agnostic core. Devs:
+Each component is:
 
-1. Register UI surfaces per agent action: `register("send_email", GmailComposeModal)`, `register("create_issue", LinearIssueModal)`, etc.
-2. When the agent drafts a registered action, the library intercepts the call, opens the modal pre-filled with the draft, and waits for the human's edit (or pass-through).
-3. The dev picks a *feedback strategy* (below) for how the human edit reshapes the agent's chain.
-4. The agent continues from the reshaped chain.
+- **Self-contained** — pure `(intent → result)`. Plug into any agent stack.
+- **Themed via CSS variables** — `--agent-ui-accent`, `--agent-ui-radius`, dark + light out of the box.
+- **ARIA-correct** — focus traps, escape-to-cancel, keyboard parity. Screen readers can drive the whole thing.
+- **Domain-evocative, not branded** — looks like the surface it's reviewing without copying any platform's chrome.
 
-Catalog grows by category: messaging, calendar, issue trackers, code, CRM, commerce, etc. Goal of ~100 templates, but the templates are the marketing surface. The actual contribution is the protocol + the four strategies below.
-
-## The four feedback strategies
-
-When the user edits the agent's draft (say, the email it was about to send), the agent's chain can be reshaped four ways. Each has different consequences. **The library makes them interchangeable so they can be compared cleanly.**
-
-| # | Strategy | What the agent sees afterwards | Why you'd pick it |
-|---|---|---|---|
-| 1 | **Silent rewrite** | The agent's draft is replaced with the user's edit. The agent's chain shows the edited version as if it always drafted that. No record of the human's intervention. | Smoothest UX. No apology spiral. The agent doesn't second-guess itself. |
-| 2 | **Visible correction** | Agent's original draft is preserved. A "user revised this to X" message gets inserted after. Agent sees both. | Transparency. Agent can react ("got it, I'll adjust"). Useful if you want learning within a session. |
-| 3 | **Reject and retry** | Agent's draft is discarded. The agent receives a "draft this differently — here's what was wrong: [user's notes]" prompt and re-emits. | Forces the agent to genuinely revise rather than apply a one-shot patch. Best for cases where you want the agent to internalize the correction. |
-| 4 | **Constraint injection** | The user's edit isn't directly applied; instead a derived constraint ("for emails like this, prefer X over Y") is appended to the system prompt. The current draft proceeds with the user's literal edit, AND future drafts inherit the constraint. | Durable cross-action learning within a session. Risky if the constraint extraction is wrong. |
-
-None of these is universally "correct." That's the point.
-
-## What we measure
-
-For each strategy, on a controlled fixture (an agent task with a planted mistake the user reliably fixes), the test harness reports:
-
-- **Recurrence** — when the agent has to draft a similar action later in the session, does it repeat the original mistake?
-- **Coherence** — does the agent apologize, second-guess, get confused, or otherwise derail in the next few turns after the edit?
-- **Edit stickiness** — if the agent gets to revise its own output later (e.g. "make it shorter"), does the user's edit survive, or does the agent revert toward its first draft?
-- **Token cost** — input tokens spent on the next agent turn after the edit. Strategy 3 (retry) is expected to cost most.
-- **Cross-action transfer** — if the user edited the agent's *tone* in an email, does the next Slack draft inherit the new tone? (Sometimes wanted, sometimes not.)
-
-Each strategy gets one number on each axis. We publish the matrix. Devs pick based on what their app actually needs, not vibes.
-
-## Findings so far (early, partial)
-
-We've started the empirical comparison. The first run is partial — Gemini's free-tier daily quota (20 req/day on `gemini-2.5-flash`) ran out mid-run, so several scenarios are still pending. **Detailed log:** [`examples/strategy-tests/FINDINGS.md`](examples/strategy-tests/FINDINGS.md). Test harness: [`examples/strategy-tests/run.ts`](examples/strategy-tests/run.ts).
-
-What we tested in run 1:
-
-| Scenario | Status | Headline finding |
+| Component | Status | What it reviews |
 |---|---|---|
-| **Multi-turn stickiness** (3 follow-up drafts) | ✅ ran | All three strategies (silent / visible / constraint) preserved the edit across all 3 turns. To find drift, we need a longer/harder scenario. |
-| **Awareness probe** ("did the user edit your draft?") | ✅ ran | Cleanest differentiator. silent: NO (no record). visible: YES (cited the specific change). constraint: NO (chain shows agent producing the edited version itself). |
-| **Constraint disclosure** ("are you under any system rules?") | ⚠ noisy | The probe wording was ambiguous — silent's answer was contaminated by the model interpreting prompt-level instructions ("output ONLY the email body") as a "constraint". Probe needs sharper wording. |
-| **Erroneous edit propagation** (typo) | ⚠ partial | silent didn't propagate the synthetic typo (1/3 strategies ran before quota hit). The fixture also needs better baseline word choice — current baseline didn't naturally contain the target word. |
-| **Retry redraft** (does it actually shorten?) | ⏸ pending | Quota hit before this scenario. |
-| **Long-context drift** (8-10 turns) | ⏸ pending | Test designed but not yet run. |
-| **Adversarial edit** (user introduces a false claim) | ⏸ pending | Test designed but not yet run. |
+| `email-compose` | stable | A drafted email — addresses, subject, body, tone hint |
+| `slack-message` | stable | A channel reply — thread context, mentions, broadcast toggle |
+| `linear-issue` | stable | An issue creation — title, description, priority, labels, assignee |
+| `github-pr-review` | soon | Approve / comment / request changes on a PR |
+| `sql-query-runner` | soon | Approve a query before prod, with schema awareness |
+| `file-patch-preview` | soon | Inline diff with approve / reject / edit per hunk |
+| `calendar-event` | soon | Confirm a meeting, attendee resolution, conflict warnings |
+| `github-issue` | soon | File a GitHub issue with labels, assignee, milestone |
+| `sms-message` | soon | Approve a text, carrier preview, delivery window |
 
-What this tells us so far:
+[See them live →](https://theohmwoa.github.io/agent-feedback-ui/)
 
-- **The strategies all "work"** for the immediate effect — preserving a one-shot edit across the next few turns is uniform across silent/visible/constraint.
-- **The library's design guarantees show up correctly in agent behavior.** Specifically, the silent strategy's invisibility *to the agent* is genuine: the agent reports "the user did not edit my draft", because from its own context that's true.
-- **Differentiation between strategies will only show up in harder scenarios** — long contexts, adversarial edits, repeated edits, edits the model is biased against. The next run will target these specifically.
+## How you use a component
 
-Coming next when quota resets, planned in `run.ts`:
+Each component is a pure function from intent → result. No provider, no context, no runtime. You decide when it mounts and what you do with the result.
 
-1. **Sharper constraint-disclosure probe** that excludes prompt-level instructions ("any standing rules I established outside this user message").
-2. **Better erroneous-edit fixture** with a typo in a high-probability word (e.g. "recieve" / "receive") so the baseline naturally contains it.
-3. **Long-context drift scenario** — 8-10 follow-up turns to see if silent/visible fade where constraint holds.
-4. **Adversarial edit scenario** where the user injects a false factual claim and we measure whether each strategy lets the lie propagate or whether visible's transparency gives the agent a chance to push back.
+```tsx
+import { EmailCompose } from "@/components/agent-ui/email-compose";
 
-If you have access to a paid Gemini key (or want to wire an Anthropic / OpenAI adapter into the harness for cross-provider validation), the test infrastructure is ready to consume it — set `GEMINI_API_KEY` in `examples/strategy-tests/.env` and `npm run all`.
+<EmailCompose
+  intent={{
+    to: ["maya@nordlight.studio"],
+    subject: "Re: Q3 partnership terms",
+    body: agentDraft,
+    tone: "warm",
+    rationale: "Replying to Maya's last redline.",
+  }}
+  onResult={(r) => {
+    if (r.kind === "submit") sendEmail(r.payload);
+    if (r.kind === "edit")   sendEmail(r.payload);   // user changed it; ship the edit
+    if (r.kind === "cancel") agent.abort();
+  }}
+/>
+```
 
-## Why a library and not just a guide
+The result envelope is the same for every component:
 
-Anyone *could* build any of these strategies one-off in their own app. Most teams build one (usually #1 because it looks slickest) and never test the alternatives. Making the strategies a one-line config in a shared library is what actually makes the comparison cheap, and what gets adoption.
+```ts
+type ReviewResult<T> =
+  | { kind: "submit"; payload: T }
+  | { kind: "edit";   payload: T; diff?: Diff }
+  | { kind: "cancel" };
+```
 
-The protocol is JSON-over-anything (HTTP, websocket, in-process). The first frontend implementation is React; Rust TUI and a wasm bridge come later. Agent side is stack-agnostic — adapters land for the Vercel AI SDK, LangGraph, and raw Anthropic / OpenAI tool-use loops.
+## How you'll install (CLI, in design)
+
+The end-state is shadcn-shaped:
+
+```bash
+npx agent-ui init                              # set up agent-ui.json, paths, theme
+npx agent-ui add email-compose slack-message   # writes source into your repo
+npx agent-ui list                              # what's in the registry
+npx agent-ui diff email-compose                # what changed since you copied it
+```
+
+For now (pre-CLI), copy the file from `site/bundle.jsx` or watch this space.
+
+## Principles
+
+1. **No runtime, no provider.** Every component is pure `(intent → result)`. Wire it to whatever agent SDK you already use — AI SDK, Mastra, LangChain, your own.
+2. **Copy, don't install.** Source lands in your repo with one command. Restyle, refactor, fork — no upstream breakage. The CLI is the only npm dependency.
+3. **Domain-shaped, not branded.** Each component looks like the surface it's reviewing without copying any platform's chrome.
+4. **ARIA-correct by default.** Focus traps, escape-to-cancel, role=dialog, keyboard parity with mouse. A screen reader can drive the whole thing.
+
+## What about chain rewrites / "feedback strategies"?
+
+Earlier iterations of this project tried to bake "what should the agent's chain look like after the human edits?" into the library — silent rewrite vs. visible correction vs. constraint injection vs. retry. That's a real research question (see [`examples/strategy-tests/`](examples/strategy-tests/) for an empirical comparison on Gemini), but it's a *separate concern* from the components themselves. Components emit `{ kind: 'submit' | 'edit' | 'cancel', payload }`. What you do with that — including how you reshape the agent's history — is yours.
 
 ## Roadmap
 
-- [ ] Pin the protocol: `Action`, `Edit`, `FeedbackStrategy`, `RewriteResult`
-- [ ] Reference implementation: core lib + Vercel AI SDK adapter + email template
-- [ ] Three more templates: Slack message, Linear issue, file patch
-- [ ] Test harness: fixture agent + planted-mistake task suite
-- [ ] First empirical run across the four strategies, results published in this README
-- [ ] Catalog expansion (messaging, calendar, code, CRM)
+- [x] First three components — email-compose, slack-message, linear-issue
+- [x] Showcase site
+- [ ] CLI: init / add / list / diff
+- [ ] Public registry endpoint
+- [ ] Seven more components (PR review, SQL runner, file patch, calendar, GH issue, SMS, shell)
+- [ ] Theming guide + token reference
+- [ ] React 19 / Server Components compat audit
 
 ## License
 
