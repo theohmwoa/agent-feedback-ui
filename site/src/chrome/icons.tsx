@@ -1,0 +1,74 @@
+import type { CSSProperties, SVGProps, ReactNode } from "react";
+
+type IconProps = {
+  size?: number;
+  className?: string;
+  style?: CSSProperties;
+  strokeWidth?: number;
+} & Omit<SVGProps<SVGSVGElement>, "size">;
+
+const make = (paths: ReactNode, vb = "0 0 24 24") =>
+  function Icon({ size = 16, className = "", style = {}, strokeWidth = 1.6, ...rest }: IconProps) {
+    return (
+      <svg
+        viewBox={vb}
+        width={size}
+        height={size}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        style={style}
+        aria-hidden="true"
+        {...rest}
+      >
+        {paths}
+      </svg>
+    );
+  };
+
+export const Icon = {
+  Check:    make(<><path d="M20 6 9 17l-5-5" /></>),
+  X:        make(<><path d="M18 6 6 18M6 6l12 12" /></>),
+  Send:     make(<><path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7Z" /></>),
+  Edit:     make(<><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" /></>),
+  Sparkles: make(<><path d="M9 3 11 9l6 2-6 2-2 6-2-6-6-2 6-2 2-6Z" /><path d="M19 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z" /></>),
+  Bot:      make(<><rect x="3" y="8" width="18" height="12" rx="3" /><path d="M12 8V4" /><circle cx="12" cy="3" r="1" /><path d="M8 14v.5M16 14v.5" strokeLinecap="round" /><path d="M9 18h6" /></>),
+  Terminal: make(<><path d="m4 7 5 5-5 5" /><path d="M12 19h8" /></>),
+  Copy:     make(<><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></>),
+  ArrowRight:  make(<><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></>),
+  ArrowLeft:   make(<><path d="M19 12H5" /><path d="m12 19-7-7 7-7" /></>),
+  ChevronDown: make(<><path d="m6 9 6 6 6-6" /></>),
+  ChevronRight: make(<><path d="m9 6 6 6-6 6" /></>),
+  Paperclip: make(<><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l8.57-8.57a4 4 0 0 1 5.66 5.66l-8.58 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" /></>),
+  Hash:     make(<><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18" /></>),
+  Lock:     make(<><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>),
+  AtSign:   make(<><circle cx="12" cy="12" r="4" /><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" /></>),
+  Smile:    make(<><circle cx="12" cy="12" r="9" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><path d="M9 9h.01M15 9h.01" /></>),
+  Image:    make(<><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-5-5-9 9" /></>),
+  Bold:     make(<><path d="M6 4h7a4 4 0 0 1 0 8H6zM6 12h8a4 4 0 0 1 0 8H6z" /></>),
+  Italic:   make(<><path d="M19 4h-9M14 20H5M15 4 9 20" /></>),
+  Link:     make(<><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></>),
+  List:     make(<><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" /></>),
+  Code:     make(<><path d="m16 18 6-6-6-6M8 6l-6 6 6 6" /></>),
+  Diff:     make(<><path d="M12 3v18" /><path d="M5 8h6M5 16h6" /><path d="M14 12h7M17.5 8.5v7" /></>),
+  Flag:     make(<><path d="M4 22V4M4 4h12l-2 4 2 4H4" /></>),
+  AlertTriangle: make(<><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" /><path d="M12 9v4M12 17h.01" /></>),
+  Calendar: make(<><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></>),
+  Tag:      make(<><path d="M20.59 13.41 13.42 20.58a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z" /><circle cx="7" cy="7" r="1" /></>),
+  User:     make(<><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></>),
+  Users:    make(<><circle cx="9" cy="8" r="3.5" /><path d="M2 21a7 7 0 0 1 14 0" /><circle cx="17" cy="6" r="3" /><path d="M22 18a5 5 0 0 0-5-5" /></>),
+  Plus:     make(<><path d="M12 5v14M5 12h14" /></>),
+  Minus:    make(<><path d="M5 12h14" /></>),
+  Layers:   make(<><path d="m12 2 10 6-10 6L2 8z" /><path d="m2 16 10 6 10-6" /><path d="m2 12 10 6 10-6" /></>),
+  GitHub:   make(<><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.36-1.34-3.36-1.34-.46-1.16-1.12-1.47-1.12-1.47-.91-.62.07-.61.07-.61 1.01.07 1.54 1.04 1.54 1.04.9 1.54 2.36 1.1 2.94.84.09-.65.35-1.1.63-1.35-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.6 9.6 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" stroke="none" fill="currentColor" /></>),
+  Search:   make(<><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>),
+  Sun:      make(<><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" /></>),
+  Moon:     make(<><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" /></>),
+  Share:    make(<><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" /></>),
+  ExternalLink: make(<><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><path d="M15 3h6v6M10 14 21 3" /></>),
+};
+
+export type IconKey = keyof typeof Icon;
