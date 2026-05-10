@@ -30,7 +30,7 @@ export function CodeBlock({
   );
   return (
     <div style={{
-      background: "oklch(0.11 0.005 80)",
+      background: "var(--code-bg)",
       border: "1px solid var(--border)",
       borderRadius: 12,
       overflow: "hidden",
@@ -49,7 +49,7 @@ export function CodeBlock({
       </div>
       <pre className={`language-${lang}`} style={{
         margin: 0, padding: "16px 18px",
-        color: "var(--fg)",
+        color: "var(--code-fg)",
         whiteSpace: "pre",
         overflowX: "auto",
       }}>

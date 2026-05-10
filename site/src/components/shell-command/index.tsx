@@ -107,7 +107,7 @@ export function ShellCommand({
       {/* Command box — edit-in-place */}
       <div style={{
         margin: "16px",
-        background: "oklch(0.11 0.005 80)",
+        background: "var(--code-bg)",
         border: "1px solid var(--border)",
         borderRadius: 10,
         overflow: "hidden",
@@ -132,8 +132,9 @@ export function ShellCommand({
             width: "100%", padding: "12px 14px",
             background: "transparent", border: 0, outline: 0,
             fontFamily: "var(--font-mono)", fontSize: 13,
-            color: "var(--fg)", lineHeight: 1.6,
+            color: "var(--code-fg)", lineHeight: 1.6,
             display: "block",
+            caretColor: "var(--agent-ui-accent)",
           }}
         />
       </div>

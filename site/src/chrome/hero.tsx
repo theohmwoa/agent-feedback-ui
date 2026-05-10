@@ -170,7 +170,7 @@ function Terminal({
 }) {
   return (
     <div style={{
-      background: "oklch(0.11 0.005 80)",
+      background: "var(--code-bg)",
       border: "1px solid var(--border)",
       borderRadius: 12, overflow: "hidden",
       fontFamily: "var(--font-mono)",

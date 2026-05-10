@@ -152,7 +152,7 @@ function HunkBlock({
 }) {
   return (
     <div style={{
-      background: "oklch(0.11 0.005 80)",
+      background: "var(--code-bg)",
       border: "1px solid " + (approved ? "color-mix(in oklch, var(--c-ok) 30%, var(--border))" : "var(--border)"),
       borderRadius: 10, overflow: "hidden",
       marginBottom: 12,

@@ -137,7 +137,7 @@ function CardPreview({ id, accent }: { id: string; accent: string }) {
   if (id === "file-patch-preview") {
     return (
       <svg width="100%" height="100%" viewBox="0 0 280 132" preserveAspectRatio="xMidYMid slice">
-        <rect x="20" y="14" width="240" height="100" rx="6" fill="oklch(0.11 0.005 80)" stroke="var(--border)" />
+        <rect x="20" y="14" width="240" height="100" rx="6" fill="var(--code-bg)" stroke="var(--border)" />
         <rect x="20" y="14" width="240" height="22" fill="var(--bg-inset)" />
         <rect x="32" y="22" width="80" height="6" rx="3" fill="var(--fg-faint)" />
         <rect x="32" y="42" width="200" height="6" rx="2" fill="var(--c-err)" opacity=".22" />
@@ -152,7 +152,7 @@ function CardPreview({ id, accent }: { id: string; accent: string }) {
   if (id === "shell-command") {
     return (
       <svg width="100%" height="100%" viewBox="0 0 280 132" preserveAspectRatio="xMidYMid slice">
-        <rect x="20" y="14" width="240" height="100" rx="6" fill="oklch(0.11 0.005 80)" stroke="var(--border)" />
+        <rect x="20" y="14" width="240" height="100" rx="6" fill="var(--code-bg)" stroke="var(--border)" />
         <rect x="20" y="14" width="240" height="22" fill="var(--bg-inset)" />
         <circle cx="32" cy="25" r="3" fill={accent} />
         <rect x="44" y="22" width="60" height="6" rx="3" fill="var(--fg-faint)" />
@@ -167,7 +167,7 @@ function CardPreview({ id, accent }: { id: string; accent: string }) {
   if (id === "sql-query-runner") {
     return (
       <svg width="100%" height="100%" viewBox="0 0 280 132" preserveAspectRatio="xMidYMid slice">
-        <rect x="20" y="14" width="240" height="100" rx="6" fill="oklch(0.11 0.005 80)" stroke="var(--border)" />
+        <rect x="20" y="14" width="240" height="100" rx="6" fill="var(--code-bg)" stroke="var(--border)" />
         <rect x="20" y="14" width="240" height="22" fill="var(--bg-inset)" />
         <rect x="32" y="22" width="50" height="8" rx="2" fill={accent} />
         <rect x="220" y="22" width="32" height="8" rx="2" fill="var(--c-warn)" opacity=".5" />

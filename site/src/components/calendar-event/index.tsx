@@ -179,6 +179,16 @@ export function CalendarEvent({
                 </button>
               </div>
             ))}
+            <AddAttendee
+              onAdd={(value) => {
+                if (attendees.some(a => a.email === value)) return;
+                const guessName = value
+                  .split("@")[0]!
+                  .replace(/[._]/g, " ")
+                  .replace(/\b\w/g, c => c.toUpperCase());
+                setAttendees([...attendees, { email: value, name: guessName || undefined }]);
+              }}
+            />
           </div>
         </Row>
 
@@ -233,13 +243,68 @@ export function CalendarEvent({
 
 function Row({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <span style={{ width: 22, color: "var(--fg-faint)", display: "inline-flex", justifyContent: "center" }}>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+      <span style={{ width: 22, color: "var(--fg-faint)", display: "inline-flex", justifyContent: "center", marginTop: 6 }}>
         {icon}
       </span>
       <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8 }}>
         {children}
       </div>
+    </div>
+  );
+}
+
+function AddAttendee({ onAdd }: { onAdd: (value: string) => void }) {
+  const [value, setValue] = React.useState("");
+  const [focus, setFocus] = React.useState(false);
+  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  const submit = () => {
+    if (!isEmail) return;
+    onAdd(value.trim());
+    setValue("");
+  };
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 6,
+      padding: "4px 8px",
+      background: "transparent",
+      border: `1px dashed ${focus ? "color-mix(in oklch, var(--agent-ui-accent) 60%, var(--border-strong))" : "var(--border-strong)"}`,
+      borderRadius: 8,
+      fontSize: 13,
+      transition: "border-color .12s",
+    }}>
+      <Icon.Plus size={12} style={{ color: "var(--fg-faint)" }} />
+      <input
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onFocus={() => setFocus(true)}
+        onBlur={() => setFocus(false)}
+        onKeyDown={e => {
+          if (e.key === "Enter") { e.preventDefault(); submit(); }
+        }}
+        placeholder="add attendee — name@example.com"
+        style={{
+          flex: 1, height: 28, padding: 0,
+          background: "transparent",
+          border: 0, outline: 0,
+          fontSize: 13, color: "var(--fg)",
+        }}
+      />
+      <button
+        onClick={submit}
+        disabled={!isEmail}
+        style={{
+          fontSize: 11, fontFamily: "var(--font-mono)",
+          padding: "2px 8px",
+          background: isEmail ? "color-mix(in oklch, var(--agent-ui-accent) 18%, transparent)" : "transparent",
+          color: isEmail ? "var(--agent-ui-accent)" : "var(--fg-faint)",
+          border: `1px solid ${isEmail ? "color-mix(in oklch, var(--agent-ui-accent) 40%, transparent)" : "var(--border)"}`,
+          borderRadius: 6,
+          cursor: isEmail ? "pointer" : "not-allowed",
+        }}
+      >
+        add
+      </button>
     </div>
   );
 }

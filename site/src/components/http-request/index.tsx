@@ -194,12 +194,13 @@ export function HttpRequest({
             placeholder="// no body"
             style={{
               width: "100%", padding: "12px 14px",
-              background: "oklch(0.11 0.005 80)",
+              background: "var(--code-bg)",
               border: "1px solid var(--border)",
               borderRadius: 10, outline: 0,
               fontFamily: "var(--font-mono)", fontSize: 12.5,
-              color: "var(--fg)", lineHeight: 1.6,
+              color: "var(--code-fg)", lineHeight: 1.6,
               minHeight: 200, display: "block",
+              caretColor: "var(--agent-ui-accent)",
             }}
           />
         )}
