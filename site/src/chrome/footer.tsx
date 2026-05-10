@@ -92,7 +92,7 @@ export function Footer() {
           fontFamily: "var(--font-mono)", fontSize: 11.5,
           color: "var(--fg-faint)",
         }}>
-          <span>agent-ui · 0.1.0 · stable: 3 / target: 10</span>
+          <span>agent-ui · 0.1.0 · stable: 13 · roadmap: 3</span>
           <span>not affiliated with any of the products it evokes.</span>
         </div>
       </div>

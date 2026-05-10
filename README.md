@@ -25,13 +25,20 @@ Each component is:
 |---|---|---|
 | `email-compose` | stable | A drafted email — addresses, subject, body, tone hint |
 | `slack-message` | stable | A channel reply — thread context, mentions, broadcast toggle |
-| `linear-issue` | stable | An issue creation — title, description, priority, labels, assignee |
-| `github-pr-review` | soon | Approve / comment / request changes on a PR |
-| `sql-query-runner` | soon | Approve a query before prod, with schema awareness |
-| `file-patch-preview` | soon | Inline diff with approve / reject / edit per hunk |
-| `calendar-event` | soon | Confirm a meeting, attendee resolution, conflict warnings |
-| `github-issue` | soon | File a GitHub issue with labels, assignee, milestone |
-| `sms-message` | soon | Approve a text, carrier preview, delivery window |
+| `linear-issue` | stable | An issue creation — title, description, priority, labels |
+| `github-pr-review` | stable | Approve / comment / request changes on a PR, three-state submit |
+| `file-patch-preview` | stable | Inline diff with per-hunk approve/reject |
+| `shell-command` | stable | Approve a shell command, risk badge, dry-run preview |
+| `sql-query-runner` | stable | Approve a query, READ/WRITE/DESTRUCTIVE classification |
+| `calendar-event` | stable | Confirm a meeting, attendee conflict warnings |
+| `github-issue` | stable | File a GitHub issue, labels, assignees, milestone |
+| `notion-page` | stable | Block-level page edit, database properties, todos |
+| `http-request` | stable | Approve an HTTP call, method/url/headers/body editor |
+| `stripe-payment` | stable | Authorize a charge, refund, or transfer |
+| `sms-message` | stable | Approve a text, segment counter, schedule-later |
+| `salesforce-record` | soon | Update an Account/Lead/Opportunity — field-level diffs |
+| `google-doc` | soon | Inline doc edits with track-changes |
+| `discord-message` | soon | Post in a channel/DM, embeds, reply context |
 
 [See them live →](https://theohmwoa.github.io/agent-feedback-ui/)
 
