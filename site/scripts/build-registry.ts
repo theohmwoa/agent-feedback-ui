@@ -30,31 +30,24 @@ type RegistryEntry = {
 
 const VERSION = "0.1.0";
 
-// ----- meta inlined here so we don't have to eval TS at build-time. -----
-// Keep in sync with src/components/*/meta.ts.
-const COMPONENT_META: Record<string, { title: string; summary: string; category: string }> = {
-  "email-compose":      { title: "Email compose",      summary: "Review and edit an email before the agent sends it.",                          category: "messaging" },
-  "slack-message":      { title: "Slack message",      summary: "Reply in a thread or post to a channel.",                                       category: "messaging" },
-  "linear-issue":       { title: "Linear issue",       summary: "Triage-shaped issue creation.",                                                 category: "issue-tracker" },
-  "github-pr-review":   { title: "GitHub PR review",   summary: "Approve, comment, or request changes on a PR.",                                 category: "code" },
-  "file-patch-preview": { title: "File patch preview", summary: "Inline diff with per-hunk approve/reject.",                                     category: "code" },
-  "shell-command":      { title: "Shell command",      summary: "Approve a shell command before the agent runs it.",                             category: "code" },
-  "sql-query-runner":   { title: "SQL query runner",   summary: "Approve a query before it hits prod.",                                          category: "data" },
-  "calendar-event":     { title: "Calendar event",     summary: "Confirm a meeting before it's scheduled.",                                      category: "calendar" },
-  "github-issue":       { title: "GitHub issue",       summary: "File a GitHub issue with title, body, labels, assignees, and milestone.",       category: "issue-tracker" },
-  "notion-page":        { title: "Notion page",        summary: "Approve a page write to Notion.",                                               category: "docs" },
-  "http-request":       { title: "HTTP request",       summary: "Approve an HTTP call before the agent fires it.",                               category: "integration" },
-  "stripe-payment":     { title: "Stripe payment",     summary: "Authorize a charge, refund, or transfer.",                                      category: "payments" },
-  "sms-message":        { title: "SMS message",        summary: "Approve a text message.",                                                       category: "messaging" },
-};
+// Read a meta.ts file to extract the component's title / summary / category.
+// Cheap regex parse — these files all follow the same shape.
+function readMeta(slug: string) {
+  const metaPath = join(SRC, "components", slug, "meta.ts");
+  const src = readFileSync(metaPath, "utf8");
+  const title    = (src.match(/title:\s*["']([^"']+)["']/)    || [])[1] || slug;
+  const summary  = (src.match(/summary:\s*["']([^"']+)["']/)  || [])[1] || "";
+  const category = (src.match(/category:\s*["']([^"']+)["']/) || [])[1] || "misc";
+  return { title, summary, category };
+}
 
-const COMPONENTS = Object.keys(COMPONENT_META);
+const COMPONENTS = readdirSync(join(SRC, "components"))
+  .filter(name => statSync(join(SRC, "components", name)).isDirectory())
+  .sort();
 
 // ----- component entries -----
 for (const slug of COMPONENTS) {
   const dir = join(SRC, "components", slug);
-  if (!statSync(dir).isDirectory()) continue;
-
   const files: Array<{ path: string; content: string }> = [];
   for (const f of readdirSync(dir)) {
     if (f === "meta.ts" || f === "usage.ts") continue;
@@ -63,8 +56,7 @@ for (const slug of COMPONENTS) {
       content: readFileSync(join(dir, f), "utf8"),
     });
   }
-
-  const meta = COMPONENT_META[slug]!;
+  const meta = readMeta(slug);
   const entry: RegistryEntry = {
     name: slug,
     type: "component",
@@ -104,12 +96,10 @@ for (const [name, def] of Object.entries(sysFiles)) {
 
 const index = {
   agentUiVersion: VERSION,
-  components: COMPONENTS.map(slug => ({
-    name: slug,
-    title: COMPONENT_META[slug]!.title,
-    summary: COMPONENT_META[slug]!.summary,
-    category: COMPONENT_META[slug]!.category,
-  })),
+  components: COMPONENTS.map(slug => {
+    const m = readMeta(slug);
+    return { name: slug, title: m.title, summary: m.summary, category: m.category };
+  }),
   system: Object.keys(sysFiles),
 };
 writeFileSync(join(OUT, "index.json"), JSON.stringify(index, null, 2) + "\n");

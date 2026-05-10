@@ -29,3 +29,5 @@ yarn-error.log*
 # Test artifacts
 coverage/
 *.db/
+.claude/
+site/public/registry/
